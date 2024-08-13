@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# exit when a command fails
+set -o errexit
+
+# exit when accessing an unset variable
+set -o nounset
+
+# exit if one command in a pipeline fails
+set -o pipefail
+
+# check if paused for 1 minute
+if [ -e '/tmp/disable-askpass' ]
+then
+  TIME_MODIFIED=$(stat -f %m /tmp/disable-askpass)
+  TIME_NOW=$(date +%s)
+  TIME_ALLOW=$((TIME_MODIFIED + 60))
+
+  if [ "$TIME_ALLOW" -ge "$TIME_NOW" ]
+  then
+    exit 0
+  fi
+
+fi
+
+# create dialog window
+result=$(osascript \
+  -e 'tell application "Terminal"' \
+  -e "display dialog \"$*\" buttons {\"Deny\", \"Allow for 1min\", \"Allow\"} default button 3 with title \"SSH Agent\" with icon caution" \
+  -e 'end tell')  
+
+# if allow for 1min
+if [ "$result" = "button returned:Allow for 1min" ]
+then
+  touch /tmp/disable-askpass
+  exit 0
+fi
+
+# if allow
+if [ "$result" = "button returned:Allow" ]
+then
+  exit 0
+fi
+
+# if deny
+exit 1
