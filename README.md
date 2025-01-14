@@ -44,6 +44,10 @@ if ! ssh-add -l 2>/dev/null >/dev/null; then
 fi
 ```
 
+## Troubleshooting
+
+* If the environment variable [`SSH_ASKPASS_REQUIRE=force`](https://man7.org/linux/man-pages/man1/ssh.1.html) is set, askpass is also used for other passphrase inputs (e.g. for the [YubiKey PAM](https://developers.yubico.com/yubico-pam/)). However, this askpass script is not intended for this purpose. You can remove this environment variable and load the key with [`ssh-add -c`](https://man-api.ch/v1/buster/1/ssh-add) instead.
+
 ## Inspiration
 
 * https://serverfault.com/a/238500
