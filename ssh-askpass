@@ -26,6 +26,7 @@ fi
 # create dialog window
 result=$(osascript \
   -e 'tell application "Terminal"' \
+  -e 'activate' \
   -e "display dialog \"$*\" buttons {\"Deny\", \"Allow for 1min\", \"Allow\"} default button 3 with title \"SSH Agent\" with icon caution" \
   -e 'end tell')  
 
