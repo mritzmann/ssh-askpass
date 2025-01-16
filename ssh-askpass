@@ -9,6 +9,8 @@ set -o nounset
 # exit if one command in a pipeline fails
 set -o pipefail
 
+SOUND="/System/Library/Sounds/Tink.aiff"
+
 # check if paused for 1 minute
 if [ -e '/tmp/disable-askpass' ]
 then
@@ -23,10 +25,14 @@ then
 
 fi
 
-# create dialog window
+# create dialog window and play sound
+sleep 0.1 && afplay "$SOUND" & \
 result=$(osascript \
-  -e 'tell application "Terminal"' \
-  -e 'activate' \
+  -e "tell application \"System Events\"" \
+  -e "set frontmostProcess to first process where it is frontmost" \
+  -e "set appName to name of frontmostProcess" \
+  -e "end tell" \
+  -e "tell application appName" \
   -e "display dialog \"$*\" buttons {\"Deny\", \"Allow for 1min\", \"Allow\"} default button 3 with title \"SSH Agent\" with icon caution" \
   -e 'end tell')  
 
