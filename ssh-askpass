@@ -25,9 +25,13 @@ fi
 
 # create dialog window
 result=$(osascript \
-  -e 'tell application "Terminal"' \
-  -e "display dialog \"$*\" buttons {\"Deny\", \"Allow for 1min\", \"Allow\"} default button 3 with title \"SSH Agent\" with icon caution" \
-  -e 'end tell')  
+  -e 'tell application "System Events" to set prevApp to name of first application process whose frontmost is true' \
+  -e 'tell application "Finder"' \
+  -e 'activate' \
+  -e "set dlgResult to display dialog \"$*\" buttons {\"Deny\", \"Allow for 1min\", \"Allow\"} default button 3 with title \"SSH Agent\" with icon caution" \
+  -e 'end tell' \
+  -e 'tell application prevApp to activate' \
+  -e 'return dlgResult')
 
 # if allow for 1min
 if [ "$result" = "button returned:Allow for 1min" ]
